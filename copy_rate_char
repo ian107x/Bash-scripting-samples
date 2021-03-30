@@ -1,0 +1,39 @@
+#! /bin/bash
+# Typical script solution for Assignment 3
+# Define array of file names
+files=("_file1" "_file2" "_file3" "_file4" "_file5")
+
+# Create some files of various sizes 10 Kbytes to 5 Mbytes
+dd if=/dev/zero of="${files[0]}" bs=1K count=10   status=none
+dd if=/dev/zero of="${files[1]}" bs=1K count=500  status=none
+dd if=/dev/zero of="${files[2]}" bs=1024k count=1  status=none
+dd if=/dev/zero of="${files[3]}" bs=1024 count=2500  status=none
+dd if=/dev/zero of="${files[4]}" bs=1024k count=5  status=none
+
+file_copy() {
+	
+	size_b="$(wc -c < "$1")"   
+	size_kb=$(awk "BEGIN { printf\"%.2f\n\", $size_b/1024 }")  
+	size_mb=$(awk "BEGIN { printf\"%.2f\n\", $size_kb/1024 }") 
+	start=$(awk "BEGIN { printf\"%.2f\n\", $(date +%s%N)/1000000 }") 
+
+	cp "$1"  _temp
+
+	end=$(awk "BEGIN { printf\"%.2f\n\", $(date +%s%N)/1000000 }")
+	time_ms=$(awk "BEGIN { printf\"%.2f\n\",  $end - $start }")
+	sleep 1
+	time_s=$(awk "BEGIN { printf\"%.2f\n\", $time_ms/1000 }")
+	rate=$(awk "BEGIN { printf\"%.2f\n\", $size_mb/$time_s }")
+	sleep 1
+	printf "%s\tsizekb: %d\ttime: %d ms\trate: %d bytes/ms\n" \
+		${file} ${size_kb} ${time} ${rate}
+}
+
+# Create a copy of each file in the array
+for file in "${files[@]}"; do
+	file_copy "${file}"
+done
+rm _temp _file*
+sleep 1
+echo -e "\e[1m$0: Script is exiting now ...\e[0m\n"
+exit 0

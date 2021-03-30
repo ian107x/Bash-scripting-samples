@@ -1,0 +1,34 @@
+#!/bin/bash
+#Ian Rowland 19190859
+big_file=$(ls -l | sort -k5 -r -g | head -1 | awk '{print $9}')
+echo "the largest file is: $big_file"
+#save the total file number to a variable, then echo it as part of a message
+fileCount=$(ls -l ~ /.. | wc -l)
+echo "the total file count is $fileCount"
+
+dirNum=$( ls -l ~ | grep "^d" | wc -l)
+echo "the directory number is $dirNum"
+
+availSpace=$(df -B 4K ~ | tail -1 | awk '{print $4}')
+echo "available space is: $availSpace"
+
+usedSpacePercent=$(df -B 4k ~ | tail -1 | awk '{print $5}')
+echo "The percentage of used space is: $usedSpacePercent"
+#used to make text bold
+bold=$(tput bold)
+#used to return text to normal
+normal=$(tput sgr0)
+#used to make text red
+red='\033[0;31m'
+#used to make text green
+green='\033[0;32m'
+#used to compare to availSpace in the if-else statement below
+z=(5000000);
+#displays a warning message in red if available space is less than 5,000,000, and a message in
+# green if availSpace is greater than 5,000,000 
+if [ $z > $availSpace ]
+then
+	echo -e "${red}Disk space is running low, ${bold}$usedSpacePercent${normal} ${red}is used"
+else
+	echo -e "${green}Disk space is sufficient, ${bold}$usedSpacePercent${normal} ${green}is left"
+fi

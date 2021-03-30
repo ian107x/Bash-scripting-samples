@@ -1,0 +1,45 @@
+#! /bin/bash
+#author: Ian Rowland 19190859
+#A bash script to copy a file to a temp file, and calculate the size and time spent copying.
+# Create some files of various sizes 10 Kbytes to 5 Mbytes
+file_Names=(myFile_1 myFile_2 myFile_3 myFile_4 myFile_5)
+dd if=/dev/zero of=${file_Names[0]} bs=1k count=10 status=none
+dd if=/dev/zero of=${file_Names[1]} bs=1k count=500 status=none
+dd if=/dev/zero of=${file_Names[2]} bs=1024k count=1 status=none
+dd if=/dev/zero of=${file_Names[3]} bs=1024 count=2500 status=none
+dd if=/dev/zero of=${file_Names[4]} bs=1024k count=5 status=none
+my_function () {
+	#calculate the time taken for the copy
+	t1=$(awk "BEGIN { printf\"%.3f\n\", $(date +%s%N)/1000000}")
+	./kopy $1 temp
+	t2=$(awk "BEGIN { printf\"%.3f\n\", $(date +%s%N)/1000000}")
+	elapsed_time=$(awk "BEGIN { printf\"%.3f\n\", $t2 - $t1}")
+	timeS=$(awk "BEGIN { printf\"%.3f\n\", $elapsed_time/1000 }")
+	#get the size of the file
+	size=$(wc -c < $1)
+	sizeKB=$(awk "BEGIN { printf\"%.3f\n\", $size / 1024}")
+	sizeMB=$(awk "BEGIN { printf\"%.3f\n\", $sizeKB/1024 }")
+	transfer_rate=$(awk "BEGIN { printf\"%.3f\n\", $sizeMB / $timeS}")
+	#values are echoed out to the terminal
+	echo "file name: $1"
+	echo "file size: $sizeKB kb"
+	echo "copy time: $elapsed_time ms"
+	echo "transfer rate: $transfer_rate mbytes/s"
+	echo ""
+	
+	
+}
+#for loop to call the function for each file
+for file in "${file_Names[@]}"; do
+	my_function "$file" 
+	sleep 1
+done
+echo "removing files.."
+#for loop to remove each file
+for file in "${file_Names[@]}"; do
+	rm -f "$file"
+done	
+rm -f temp #remove temp file
+
+echo "exiting"
+exit

@@ -1,0 +1,13 @@
+#!/bin/bash
+#Ian Rowland 19190859
+chmod a+x busy_wait
+./busy_wait &
+
+PID=$(ps aux | sort -nrk 3,3 | awk '{print $2}' | head -1)
+echo "the process id for the busiest process is: $PID"
+cpuUtilization=$(ps aux | sort -nrk 3,3| awk ' {print $3}' | head -1)
+echo "cpu utilization for the busiest process: $cpuUtilization%"
+procName=$(ps -p $PID -o comm=)
+
+kill $PID
+echo "Process killed is called: $procName"

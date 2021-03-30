@@ -1,0 +1,20 @@
+#! /bin/bash
+if [ ! -p pipe1 ]; then
+	mkfifo pipe1
+	else echo "pipe already exists"
+fi
+
+for(( x=1 ; x < 6 ; x++ )); do
+	echo "Hello from $0!" > pipe1 
+	sleep 1
+done
+
+echo "Last message!" > pipe1
+read input < pipe2
+echo "The pid is: $input"
+echo "sending HUP signal to $input"
+kill -1 $input
+echo "removing pipe1"
+rm pipe1
+echo "exiting"
+exit

@@ -1,0 +1,5 @@
+#! /bin/bash
+# Meaningless program but useful to demonstrate the busy-wait concept
+while true; 
+	do(( x++ ))
+done

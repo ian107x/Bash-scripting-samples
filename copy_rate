@@ -1,0 +1,40 @@
+#! /bin/bash
+file_Names=(myFile_1 myFile_2 myFile_3 myFile_4 myFile_5)
+dd if=/dev/zero of=${file_Names[0]} bs=1k count=10 status=none
+dd if=/dev/zero of=${file_Names[1]} bs=1k count=500 status=none
+dd if=/dev/zero of=${file_Names[2]} bs=1024k count=1 status=none
+dd if=/dev/zero of=${file_Names[3]} bs=1024 count=2500 status=none
+dd if=/dev/zero of=${file_Names[4]} bs=1024k count=5 status=none
+my_function () {
+	
+	t1=$(awk "BEGIN { printf\"%.2f\n\", $(date +%s%N)/1000000}")
+	./kopy_char $1 temp
+	t2=$(awk "BEGIN { printf\"%.2f\n\", $(date +%s%N)/1000000}")
+	elapsed_time=$(awk "BEGIN { printf\"%.2f\n\", $t2 - $t1}")
+	timeS=$(awk "BEGIN { printf\"%.2f\n\", $elapsed_time/1000 }")
+	size=$(wc -c < $1)
+	sizeKB=$(awk "BEGIN { printf\"%.2f\n\", $size / 1024}")
+	sizeMB=$(awk "BEGIN { printf\"%.2f\n\", $sizeKB/1024 }")
+	transfer_rate=$(awk "BEGIN { printf\"%.2f\n\", $sizeMB / $timeS}")
+	
+	echo "file name is: $1"
+	echo "file size of $1 is: $sizeKB kb"
+	echo "copy time is: $elapsed_time ms"
+	echo "transfer rate is: $transfer_rate mbytes/s"
+	echo ""
+	
+	
+}
+
+for file in "${file_Names[@]}"; do
+	my_function "$file" 
+	sleep 1
+done
+echo "removing files.."
+for file in "${file_Names[@]}"; do
+	rm -f "$file"
+done	
+rm -f temp
+
+echo "exiting"
+exit

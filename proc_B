@@ -1,0 +1,32 @@
+#! /bin/bash
+trap_function() {
+	rm -f ~/*tmp               
+	echo "This program is closing now!"
+	echo "I have removed all of your .tmp files!"
+	renice -n 5 $$
+	echo "removing pipe2"
+	rm pipe2
+	echo "exiting"
+}
+while [ "$input"  != "Last message!" ] 
+do
+	read input < pipe1
+	echo $input 
+	sleep 1
+done
+if [ ! -p pipe2 ]; then
+	mkfifo pipe2
+	else echo "pipe already exists"
+fi
+echo $$ > pipe2
+
+while [ true ] ; do
+        trap 'trap_function; exit' SIGHUP
+	echo "proc_B looping"
+	
+	sleep 1
+done
+	
+
+
+exit

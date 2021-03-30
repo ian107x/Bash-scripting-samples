@@ -1,0 +1,27 @@
+#!/bin/bash
+#Ian Rowland 19190859
+#displays the name of the user
+set | grep USER | head -n 1
+#displays user id
+set | grep UID | head -n 1
+#displays hostname of the machine
+set | grep HOSTNAME
+#displays the machine type
+set | grep MACHTYPE
+
+#saves number of file system partitions, available space in human readable format, 
+# and percentage of used space, to variables
+partitionCount=$(df -h | grep / | wc -l)
+availSpace=$(df -H ~ | tail -1 | awk '{print $4}')
+percentageUsedSpace=$(df  -H ~ | tail -1 | awk '{print $5}')
+#these variables are then displayed, along with a piece of descriptive text
+echo "Number of partitions: $partitionCount"
+echo "Available space: $availSpace"
+echo "Percentage of space used: $percentageUsedSpace"
+#display the cpu model name, cpu speed in MHz, the size of the cache
+more /proc/cpuinfo | grep "model name" | head -n 1
+more /proc/cpuinfo | grep "cpu MHz" | head -n 1
+more /proc/cpuinfo | grep "cache size" | head -n 1
+#display the total memory size, as well as the size of the free memory
+more /proc/meminfo | grep MemTotal
+more /proc/meminfo | grep MemFree
